@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUp(
+    signUpDto: SignUpDto,
+  ): Promise<{ token: string; user: UserDto }> {
     const { name, email, password } = signUpDto;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,13 +35,18 @@ export class AuthService {
         password: hashedPassword,
       });
       const token = this.jwtService.sign({ id: user._id });
-      return { token };
+      const userDto: UserDto = {
+        name: user.name,
+        email: user.email,
+        photoUrl: user.photoUrl,
+      };
+      return { token, user: userDto };
     } catch (err) {
       console.log(err.message);
     }
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
+  async login(loginDto: LoginDto): Promise<{ token: string; user: UserDto }> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
@@ -51,6 +59,15 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ id: user._id });
-    return { token };
+    const userDto: UserDto = {
+      name: user.name,
+      email: user.email,
+      photoUrl: user.photoUrl,
+    };
+
+    return {
+      token,
+      user: userDto,
+    };
   }
 }

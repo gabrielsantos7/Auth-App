@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  Req,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -11,6 +14,8 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
+import { AuthGuard } from '@nestjs/passport';
+import { UserDto } from './dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +23,9 @@ export class AuthController {
 
   @UsePipes(ValidationPipe)
   @Post('/signup')
-  async signUp(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+  ): Promise<{ token: string; user: UserDto }> {
     try {
       return await this.authService.signUp(signUpDto);
     } catch (err) {
@@ -37,7 +44,9 @@ export class AuthController {
 
   @UsePipes(ValidationPipe)
   @Post('/login')
-  async login(@Body() loginDto: LoginDto): Promise<{ token: string }> {
+  async login(
+    @Body() loginDto: LoginDto,
+  ): Promise<{ token: string; user: UserDto }> {
     try {
       return this.authService.login(loginDto);
     } catch (err) {
