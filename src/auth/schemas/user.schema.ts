@@ -14,8 +14,11 @@ export class User extends Document {
   @Prop()
   password: string;
 
-  @Prop()
+  @Prop({ default: '' })
   photoUrl: string;
+
+  @Prop({ default: 'user' })
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
