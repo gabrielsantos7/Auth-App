@@ -8,11 +8,14 @@ export class User extends Document {
   @Prop()
   name: string;
 
-  @Prop({ unique: [true, 'Duplicate email entered'] })
+  @Prop({ unique: [true, 'O e-mail já está sendo usado'] })
   email: string;
 
   @Prop()
   password: string;
+
+  @Prop()
+  photoUrl: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
