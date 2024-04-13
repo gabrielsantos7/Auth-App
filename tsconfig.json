@@ -16,6 +16,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@dtos/*": ["src/common/dtos/*"],
+      "@config/*": ["src/common/config/*"],
+      "@exceptions/*": ["src/common/exceptions/*"],
+      "@auth/*": ["src/modules/auth/*"],
+      "@users/*": ["src/modules/users/*"],
+    }
   }
 }

@@ -1,6 +1,4 @@
 import {
-  BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,10 +8,10 @@ import { User } from '../users/schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { SignUpDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { EmailAlreadyExistsException } from '../common/exceptions/email-already-exists.exception';
-import { UserEssentialsDto } from '../common/dtos/user-essentials.dto';
+import { SignUpDto } from './dtos/signup.dto';
+import { LoginDto } from './dtos/login.dto';
+import { EmailAlreadyExistsException } from '@exceptions/email-already-exists.exception';
+import { UserEssentialsDto } from '@dtos/user-essentials.dto';
 
 @Injectable()
 export class AuthService {

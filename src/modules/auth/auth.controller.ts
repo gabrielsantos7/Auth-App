@@ -12,14 +12,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { EmailAlreadyExistsException } from 'src/common/exceptions/email-already-exists.exception';
-import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../common/config/multer.config';
-import { UserEssentialsDto } from '../common/dtos/user-essentials.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
+import { SignUpDto } from './dtos/signup.dto';
+import { LoginDto } from './dtos/login.dto';
+import { EmailAlreadyExistsException } from '@exceptions/email-already-exists.exception';
+import { multerOptions } from '@config/multer.config';
+import { UserEssentialsDto } from '@dtos/user-essentials.dto';
 
 @Controller('auth')
 export class AuthController {

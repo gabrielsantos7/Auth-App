@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { UpdatePasswordDto } from './dtos/update-password.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { UserEssentialsDto } from 'src/common/dtos/user-essentials.dto';
+import { UserEssentialsDto } from '@dtos/user-essentials.dto';
 
 @Injectable()
 export class UsersService {

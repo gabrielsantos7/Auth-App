@@ -3,12 +3,10 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
-  Param,
   Patch,
   Req,
   UseGuards,
@@ -16,10 +14,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UserEssentialsDto } from 'src/common/dtos/user-essentials.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { UpdatePasswordDto } from './dtos/update-password.dto';
+import { UserEssentialsDto } from '@dtos/user-essentials.dto';
 
 @Controller('users')
 export class UsersController {
