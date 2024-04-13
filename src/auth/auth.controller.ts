@@ -64,11 +64,11 @@ export class AuthController {
 
   @UseGuards(AuthGuard())
   @Patch('/users/:id/account')
-  updateAccount(
+  async updateAccount(
     @Req() req,
     @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+    @Body() partialUpdateUserDto: Partial<UpdateUserDto>,
+  ): Promise<void> {
     const userId = req.user.id;
     if (id !== userId) {
       throw new ForbiddenException(
@@ -76,7 +76,14 @@ export class AuthController {
       );
     }
 
-    return this.authService.updateUser(userId, updateUserDto);
+    try {
+      await this.authService.updateUser(id, partialUpdateUserDto);
+    } catch (err) {
+      throw new HttpException(
+        'Erro interno do servidor',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @UseGuards(AuthGuard())

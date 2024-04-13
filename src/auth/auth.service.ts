@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
@@ -74,10 +79,26 @@ export class AuthService {
     };
   }
 
-  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
-    return await this.userModel.findByIdAndUpdate(userId, updateUserDto, {
-      new: true,
-      runValidators: true,
-    });
+  async updateUser(
+    userId: string,
+    partialUpdateUserDto: Partial<UpdateUserDto>,
+  ): Promise<void> {
+    const userToUpdate = await this.userModel.findById(userId);
+
+    if (!userToUpdate) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    const fieldsToUpdate = Object.keys(partialUpdateUserDto);
+    for (const field of fieldsToUpdate) {
+      if (partialUpdateUserDto[field] === userToUpdate[field]) {
+        throw new ForbiddenException(
+          `O novo valor do campo ${field} não pode ser igual ao valor anterior`,
+        );
+      }
+    }
+
+    Object.assign(userToUpdate, partialUpdateUserDto);
+    await userToUpdate.save();
   }
 }
