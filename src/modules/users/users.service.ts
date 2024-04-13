@@ -18,6 +18,21 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
+  async getAccount(userId: string): Promise<{ user: UserPayload }> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    const userPayload: UserPayload = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      photoUrl: user.photoUrl,
+    };
+    return { user: userPayload };
+  }
+
   async updateAccount(
     userId: string,
     updateUserDto: UpdateUserDto,

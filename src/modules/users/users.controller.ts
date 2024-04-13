@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
@@ -23,6 +24,26 @@ import { AuthenticatedRequest } from '@interfaces/request.interface';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @UseGuards(AuthGuard())
+  @Get('/profile')
+  async getAccount(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{ user: UserPayload }> {
+    const userId = req.user.id;
+    try {
+      return await this.usersService.getAccount(userId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(
+          'Erro interno do servidor',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
 
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
