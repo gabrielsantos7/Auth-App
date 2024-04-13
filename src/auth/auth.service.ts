@@ -6,16 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
+import { User } from '../users/schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
-import { UserDto } from './dto/user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { EmailAlreadyExistsException } from '../common/exceptions/email-already-exists.exception';
+import { UserEssentialsDto } from '../common/dtos/user-essentials.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +25,7 @@ export class AuthService {
 
   async signUp(
     signUpDto: SignUpDto,
-  ): Promise<{ token: string; user: UserDto }> {
+  ): Promise<{ token: string; user: UserEssentialsDto }> {
     const { name, email, password } = signUpDto;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -43,19 +41,21 @@ export class AuthService {
         password: hashedPassword,
       });
       const token = this.jwtService.sign({ id: user._id });
-      const userDto: UserDto = {
+      const userEssentialsDto: UserEssentialsDto = {
         id: user._id,
         name: user.name,
         email: user.email,
         photoUrl: user.photoUrl,
       };
-      return { token, user: userDto };
+      return { token, user: userEssentialsDto };
     } catch (err) {
       console.log(err.message);
     }
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string; user: UserDto }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ token: string; user: UserEssentialsDto }> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
@@ -68,7 +68,7 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ id: user._id });
-    const userDto: UserDto = {
+    const userEssentialsDto: UserEssentialsDto = {
       id: user._id,
       name: user.name,
       email: user.email,
@@ -77,64 +77,8 @@ export class AuthService {
 
     return {
       token,
-      user: userDto,
+      user: userEssentialsDto,
     };
-  }
-
-  async updateAccount(
-    userId: string,
-    partialUpdateUserDto: Partial<UpdateUserDto>,
-  ): Promise<void> {
-    const userToUpdate = await this.userModel.findById(userId);
-
-    if (!userToUpdate) {
-      throw new NotFoundException('Usuário não encontrado');
-    }
-
-    const fieldsToUpdate = Object.keys(partialUpdateUserDto);
-    for (const field of fieldsToUpdate) {
-      if (partialUpdateUserDto[field] === userToUpdate[field]) {
-        throw new ForbiddenException(
-          `O novo valor do campo ${field} não pode ser igual ao valor anterior`,
-        );
-      }
-    }
-
-    Object.assign(userToUpdate, partialUpdateUserDto);
-    await userToUpdate.save();
-  }
-
-  async updateAccountPassword(
-    userId: string,
-    updatePasswordDto: UpdatePasswordDto,
-  ): Promise<void> {
-    const userToUpdate = await this.userModel.findById(userId);
-
-    if (!userToUpdate) {
-      throw new NotFoundException('Usuário não encontrado');
-    }
-
-    const isPasswordMatch = await bcrypt.compare(
-      updatePasswordDto.previousPassword,
-      userToUpdate.password,
-    );
-
-    if (!isPasswordMatch) {
-      throw new BadRequestException('Senha anterior incorreta');
-    }
-
-    userToUpdate.password = await bcrypt.hash(
-      updatePasswordDto.newPassword,
-      10,
-    );
-    await userToUpdate.save();
-  }
-
-  async removeAccount(userId: string): Promise<void> {
-    const user = await this.userModel.findByIdAndDelete(userId);
-    if (!user) {
-      throw new NotFoundException('Usuário não encontrado');
-    }
   }
 
   async uploadPhoto(userId: string, filePath: string): Promise<void> {
