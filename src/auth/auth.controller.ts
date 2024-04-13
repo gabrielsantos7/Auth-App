@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
-  Get,
+  Delete,
+  ForbiddenException,
   HttpException,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -16,6 +19,8 @@ import { LoginDto } from './dto/login.dto';
 import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -55,5 +60,53 @@ export class AuthController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @UseGuards(AuthGuard())
+  @Patch('/users/:id/account')
+  updateAccount(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const userId = req.user.id;
+    if (id !== userId) {
+      throw new ForbiddenException(
+        'Você não tem permissão para atualizar esta conta',
+      );
+    }
+
+    return this.authService.updateUser(userId, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Patch('/users/:id/password')
+  updatePassword(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const userId = req.user.id;
+    if (id !== userId) {
+      throw new ForbiddenException(
+        'Você não tem permissão para atualizar esta conta',
+      );
+    }
+
+    // return this.userService.updateUser(userId, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Delete('users/:id')
+  remove(@Req() req, @Param('id') id: string) {
+    const userId = req.user.id;
+    if (id !== userId) {
+      throw new ForbiddenException(
+        'Você não tem permissão para atualizar esta conta',
+      );
+    }
+
+    // return this.userService.updateUser(userId, updateUserDto);
+    return `This action removes a #${id} cat`;
   }
 }

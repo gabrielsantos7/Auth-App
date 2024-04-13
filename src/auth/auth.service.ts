@@ -8,6 +8,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
 import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,6 +37,7 @@ export class AuthService {
       });
       const token = this.jwtService.sign({ id: user._id });
       const userDto: UserDto = {
+        id: user._id,
         name: user.name,
         email: user.email,
         photoUrl: user.photoUrl,
@@ -60,6 +62,7 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user._id });
     const userDto: UserDto = {
+      id: user._id,
       name: user.name,
       email: user.email,
       photoUrl: user.photoUrl,
@@ -69,5 +72,12 @@ export class AuthService {
       token,
       user: userDto,
     };
+  }
+
+  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+    return await this.userModel.findByIdAndUpdate(userId, updateUserDto, {
+      new: true,
+      runValidators: true,
+    });
   }
 }
