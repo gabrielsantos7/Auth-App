@@ -81,7 +81,7 @@ export class AuthController {
     }
 
     try {
-      await this.authService.updateUser(id, partialUpdateUserDto);
+      await this.authService.updateAccount(id, partialUpdateUserDto);
     } catch (err) {
       throw new HttpException(
         'Erro interno do servidor',
@@ -93,7 +93,7 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
   @Patch('/users/:id/password')
-  async updatePassword(
+  async updateAccountPassword(
     @Req() req,
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
@@ -113,7 +113,7 @@ export class AuthController {
     }
 
     try {
-      await this.authService.updateUserPassword(id, updatePasswordDto);
+      await this.authService.updateAccountPassword(id, updatePasswordDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
@@ -135,15 +135,25 @@ export class AuthController {
 
   @UseGuards(AuthGuard())
   @Delete('users/:id')
-  remove(@Req() req, @Param('id') id: string) {
+  async removeAccount(@Req() req, @Param('id') id: string) {
     const userId = req.user.id;
     if (id !== userId) {
       throw new ForbiddenException(
-        'Você não tem permissão para atualizar esta conta',
+        'Você não tem permissão para excluir esta conta',
       );
     }
 
-    // return this.userService.updateUser(userId, updateUserDto);
-    return `This action removes a #${id} cat`;
+    try {
+      await this.authService.removeAccount(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(
+          'Erro interno do servidor',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 }

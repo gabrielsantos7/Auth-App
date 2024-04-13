@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -82,7 +81,7 @@ export class AuthService {
     };
   }
 
-  async updateUser(
+  async updateAccount(
     userId: string,
     partialUpdateUserDto: Partial<UpdateUserDto>,
   ): Promise<void> {
@@ -105,7 +104,7 @@ export class AuthService {
     await userToUpdate.save();
   }
 
-  async updateUserPassword(
+  async updateAccountPassword(
     userId: string,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<void> {
@@ -129,5 +128,12 @@ export class AuthService {
       10,
     );
     await userToUpdate.save();
+  }
+
+  async removeAccount(userId: string): Promise<void> {
+    const user = await this.userModel.findByIdAndDelete(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
   }
 }
