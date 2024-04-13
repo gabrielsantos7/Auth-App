@@ -12,7 +12,9 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -24,6 +26,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from '../config/multer.config';
 
 @Controller('auth')
 export class AuthController {
@@ -148,6 +152,32 @@ export class AuthController {
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(
+          'Erro interno do servidor',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  @UseGuards(AuthGuard())
+  @Post('photo')
+  @UseInterceptors(FileInterceptor('photo', multerOptions))
+  async uploadPhoto(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    if (!file) {
+      throw new HttpException(
+        'Por favor, envie uma imagem',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      await this.authService.uploadPhoto(req.user.id, file.path);
+      const photoUrl = file.path.replace('uploads\\', '/').replace(/\\/g, '/');
+      return { photoUrl };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       } else {
         throw new HttpException(
           'Erro interno do servidor',

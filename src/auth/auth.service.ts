@@ -136,4 +136,13 @@ export class AuthService {
       throw new NotFoundException('Usuário não encontrado');
     }
   }
+
+  async uploadPhoto(userId: string, filePath: string): Promise<void> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    user.photoUrl = filePath;
+    await user.save();
+  }
 }
