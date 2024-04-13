@@ -18,7 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@dtos/*": ["src/common/dtos/*"],
+      "@interfaces/*": ["src/common/interfaces/*"],
       "@config/*": ["src/common/config/*"],
       "@exceptions/*": ["src/common/exceptions/*"],
       "@auth/*": ["src/modules/auth/*"],

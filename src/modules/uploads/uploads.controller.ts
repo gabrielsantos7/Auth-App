@@ -13,6 +13,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
+import { AuthenticatedRequest } from '@interfaces/request.interface';
 
 @Controller('uploads')
 export class UploadsController {
@@ -21,7 +22,10 @@ export class UploadsController {
   @UseGuards(AuthGuard())
   @Post('photo')
   @UseInterceptors(FileInterceptor('photo', multerOptions))
-  async uploadPhoto(@UploadedFile() file: Express.Multer.File, @Req() req) {
+  async uploadPhoto(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: AuthenticatedRequest,
+  ) {
     if (!file) {
       throw new HttpException(
         'Por favor, envie uma imagem',

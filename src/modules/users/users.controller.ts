@@ -17,7 +17,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
-import { UserEssentialsDto } from '@dtos/user-essentials.dto';
+import { UserPayload } from '@interfaces/user-payload.interface';
+import { AuthenticatedRequest } from '@interfaces/request.interface';
 
 @Controller('users')
 export class UsersController {
@@ -27,12 +28,12 @@ export class UsersController {
   @UseGuards(AuthGuard())
   @Patch('/account')
   async updateAccount(
-    @Req() req,
-    @Body() partialUpdateUserDto: UpdateUserDto,
-  ): Promise<{ user: UserEssentialsDto }> {
+    @Req() req: AuthenticatedRequest,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<{ user: UserPayload }> {
     const userId = req.user.id;
     try {
-      return this.usersService.updateAccount(userId, partialUpdateUserDto);
+      return this.usersService.updateAccount(userId, updateUserDto);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -42,7 +43,7 @@ export class UsersController {
   @UseGuards(AuthGuard())
   @Patch('/password')
   async updateAccountPassword(
-    @Req() req,
+    @Req() req: AuthenticatedRequest,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     const userId = req.user.id;
@@ -76,7 +77,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard())
   @Delete('/delete')
-  async removeAccount(@Req() req) {
+  async removeAccount(@Req() req: AuthenticatedRequest) {
     const userId = req.user.id;
     try {
       await this.usersService.removeAccount(userId);

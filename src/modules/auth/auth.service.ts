@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dtos/signup.dto';
 import { LoginDto } from './dtos/login.dto';
 import { EmailAlreadyExistsException } from '@exceptions/email-already-exists.exception';
-import { UserEssentialsDto } from '@dtos/user-essentials.dto';
+import { UserPayload } from '@interfaces/user-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -19,37 +19,33 @@ export class AuthService {
 
   async signUp(
     signUpDto: SignUpDto,
-  ): Promise<{ token: string; user: UserEssentialsDto }> {
+  ): Promise<{ token: string; user: UserPayload }> {
     const { name, email, password } = signUpDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
       throw new EmailAlreadyExistsException();
     }
 
-    try {
-      const user = await this.userModel.create({
-        name,
-        email,
-        password: hashedPassword,
-      });
-      const token = this.jwtService.sign({ id: user._id });
-      const userEssentialsDto: UserEssentialsDto = {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        photoUrl: user.photoUrl,
-      };
-      return { token, user: userEssentialsDto };
-    } catch (err) {
-      console.log(err.message);
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await this.userModel.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+    const token = this.jwtService.sign({ id: user._id });
+    const userPayload: UserPayload = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      photoUrl: user.photoUrl,
+    };
+    return { token, user: userPayload };
   }
 
   async login(
     loginDto: LoginDto,
-  ): Promise<{ token: string; user: UserEssentialsDto }> {
+  ): Promise<{ token: string; user: UserPayload }> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
@@ -62,7 +58,7 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ id: user._id });
-    const userEssentialsDto: UserEssentialsDto = {
+    const userPayload: UserPayload = {
       id: user._id,
       name: user.name,
       email: user.email,
@@ -71,7 +67,7 @@ export class AuthService {
 
     return {
       token,
-      user: userEssentialsDto,
+      user: userPayload,
     };
   }
 }
