@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { LoginDto } from './dto/login.dto';
 import { EmailAlreadyExistsException } from 'src/exceptions/email-already-exists.exception';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -99,6 +102,32 @@ export class AuthService {
     }
 
     Object.assign(userToUpdate, partialUpdateUserDto);
+    await userToUpdate.save();
+  }
+
+  async updateUserPassword(
+    userId: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<void> {
+    const userToUpdate = await this.userModel.findById(userId);
+
+    if (!userToUpdate) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      updatePasswordDto.previousPassword,
+      userToUpdate.password,
+    );
+
+    if (!isPasswordMatch) {
+      throw new BadRequestException('Senha anterior incorreta');
+    }
+
+    userToUpdate.password = await bcrypt.hash(
+      updatePasswordDto.newPassword,
+      10,
+    );
     await userToUpdate.save();
   }
 }

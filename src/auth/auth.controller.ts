@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   ForbiddenException,
   HttpException,
   HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -62,6 +65,7 @@ export class AuthController {
     }
   }
 
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
   @Patch('/users/:id/account')
   async updateAccount(
@@ -86,9 +90,10 @@ export class AuthController {
     }
   }
 
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
   @Patch('/users/:id/password')
-  updatePassword(
+  async updatePassword(
     @Req() req,
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
@@ -100,7 +105,32 @@ export class AuthController {
       );
     }
 
-    // return this.userService.updateUser(userId, updateUserDto);
+    if (updatePasswordDto.previousPassword === updatePasswordDto.newPassword) {
+      throw new HttpException(
+        'A nova senha deve ser diferente da senha anterior',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      await this.authService.updateUserPassword(id, updatePasswordDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      } else if (error instanceof BadRequestException) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      } else if (error instanceof InternalServerErrorException) {
+        throw new HttpException(
+          'Erro interno do servidor',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      } else {
+        throw new HttpException(
+          'Erro inesperado',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   @UseGuards(AuthGuard())
