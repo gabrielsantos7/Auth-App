@@ -1,73 +1,80 @@
+# 🚀 API de Autenticação
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <span>
+    <img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" />
+    <img src="https://cdn.worldvectorlogo.com/logos/mongodb-icon-1.svg" width="200" alt="Mongo Logo" />
+  </span>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bem-vindo à minha API de Autenticação! Ela oferece recursos para registro, login, gerenciamento de contas de usuários e upload de fotos de perfil.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ℹ️ Sobre
 
-## Description
+Esta API foi desenvolvida com o NestJS, um framework para Node.js altamente modular e escalável. Ela usa o MongoDB como banco de dados para armazenar informações de usuário e implementa a técnica JWT (JSON Web Tokens) para autenticação e autorização.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚪 Acesso à API
 
-## Installation
+📢 Quer usar minha API em produção? Ficarei feliz em ajudar você a integrá-la à sua aplicação! Entre em contato comigo para discutir suas necessidades e como podemos trabalhar juntos. Estou ansioso para colaborar com você!
 
-```bash
-$ npm install
-```
+## 🛠️ Configuração Local
 
-## Running the app
+1. Clone o repositório:
 
-```bash
-# development
-$ npm run start
+   ```bash
+   git clone https://github.com/gabrielsantos7/Auth-App.git
+   ```
+2. Instale as dependências:
 
-# watch mode
-$ npm run start:dev
+   ```bash
+   cd Auth-App
+   npm install
+   ```
+3. Configure as variáveis de ambiente:
 
-# production mode
-$ npm run start:prod
-```
+   Crie um arquivo _.env_ baseado no _.env.example_ e defina os valores apropriados para `DB_URL`, `JWT_SECRET` e `JWT_EXPIRATION`.
+4. Inicie o servidor localmente:
 
-## Test
+   ```bash
+   npm run start:dev
+   ```
 
-```bash
-# unit tests
-$ npm run test
+## 📦 Rotas
 
-# e2e tests
-$ npm run test:e2e
+Segue abaixo uma tabela com as rotas disponíveis nesta API:
 
-# test coverage
-$ npm run test:cov
-```
+### 🛡️ Auth
 
-## Support
+O módulo **_Auth_** é responsável por lidar com a autenticação e autorização dos usuários na aplicação. Ele fornece rotas para registro de novos usuários e autenticação de usuários existentes.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| Método | Rota         | Descrição                               |
+| ------- | ------------ | ----------------------------------------- |
+| POST    | /auth/signup | 📝 Registrar um novo usuário             |
+| POST    | /auth/login  | 🔑 Autenticar o usuário e gerar um token |
 
-## Stay in touch
+### 👥 Users
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+O módulo **_Users_** gerencia as operações relacionadas aos usuários da aplicação. Ele oferece funcionalidades para atualizar dados da conta do usuário, como nome, email e senha, bem como para remover a conta do usuário, se necessário.
 
-## License
+| Método | Rota            | Descrição                                         |
+| ------- | --------------- | --------------------------------------------------- |
+| GET     | /users/profile  | 📄 Obter dados da conta do usuário autenticado     |
+| PATCH   | /users/account  | 🔄 Atualizar dados da conta do usuário autenticado |
+| PATCH   | /users/password | 🔐 Atualizar senha da conta do usuário autenticado |
+| DELETE  | /users/delete   | ❌ Exclui a conta do usuário autenticado           |
 
-Nest is [MIT licensed](LICENSE).
+### 🖼️ Uploads
+
+O módulo **_Uploads_** trata do armazenamento e gerenciamento de uploads de arquivos, como fotos de perfil dos usuários. Ele fornece uma rota para que os usuários possam enviar suas fotos de perfil para a aplicação.
+
+| Método | Rota           | Descrição                                           |
+| ------- | -------------- | ----------------------------------------------------- |
+| POST    | /uploads/photo | 🖼️ Upload de foto de perfil do usuário autenticado |
+
+## 📝 Contribuição
+
+Sinta-se à vontade para contribuir com melhorias ou correções. Abra um pull request ou envie uma issue.
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para obter detalhes.
